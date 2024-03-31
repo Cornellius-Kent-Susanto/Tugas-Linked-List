@@ -97,6 +97,11 @@ bool LinkedList::insertNode(int val, int pos)
 
                 before->next = newNode;
                 newNode->next = after;
+
+                if (before == this->tail)
+                {
+                    this->tail = before->next;
+                }
             }
         }
         this->jumlahNode++;
@@ -122,6 +127,10 @@ bool LinkedList::deleteNode(int pos)
     else
     {
         Node *destroy{before->next};
+        if (destroy == this->tail)
+        {
+            this->tail = before;
+        }
         before->next = destroy->next;
         delete destroy;
     }
