@@ -32,7 +32,7 @@ typedef struct LinkedList
 private:
     Node *head;
     Node *tail;
-    unsigned int jumlahNode{}; // simpan jumlah node
+    int jumlahNode{}; // simpan jumlah node
 
 public:
     LinkedList()
@@ -44,10 +44,13 @@ public:
     void insertFirst(const double &src);
     void insertLast(const double &src);
     void insertOn(const double &src, int pos);
+    void insertAfter(const double &src, int pos);
 
     void deleteFirst();
     void deleteLast();
     void deleteOn(int pos);
+    void deleteAfter(int pos);
+
     ~LinkedList()
     {
         Node *temp{this->head};
@@ -69,10 +72,11 @@ std::ostream &operator<<(std::ostream &os, const LinkedList &rhs)
     os << "LinkedList : [";
     while (traverse)
     {
-        os << "(" << traverse << ", " << traverse->val << ")" << (traverse->next == nullptr ? "" : ", ");
+        os << traverse->val << (traverse->next == nullptr ? "" : ", ");
         traverse = traverse->next;
     }
-    os << "]";
+    os << "]\n"
+       << "Jumlah Node : " << rhs.jumlahNode;
 
     return os;
 }
@@ -112,15 +116,14 @@ void LinkedList::insertLast(const double &src)
         Node *temp{new Node{src}};
         this->tail->next = temp;
         this->tail = temp;
+        jumlahNode++;
     }
-
-    jumlahNode++;
 }
 
 void LinkedList::insertOn(const double &src, int pos)
 {
     // jika posisi tidak valid
-    if (pos > this->jumlahNode || pos < 0)
+    if (pos > (this->jumlahNode) || pos < 0)
     {
         std::cout << "posisi Node invalid" << std::endl;
         return;
@@ -129,7 +132,7 @@ void LinkedList::insertOn(const double &src, int pos)
     // jika posisi valid
     else
     {
-        if (!this->head)
+        if (pos == 0)
         {
             insertFirst(src);
         }
@@ -139,18 +142,22 @@ void LinkedList::insertOn(const double &src, int pos)
         }
         else
         {
-            Node *NodeBaru{new Node{src}};
+            Node *nodeBaru{new Node{src}};
             Node *temp{this->head};
             for (int i{0}; i < pos - 1; i++)
             {
                 temp = temp->next;
             }
-            NodeBaru->next = temp->next;
-            temp->next = NodeBaru;
+            nodeBaru->next = temp->next;
+            temp->next = nodeBaru;
+            jumlahNode++;
         }
     }
+}
 
-    jumlahNode++;
+void LinkedList::insertAfter(const double &src, int pos)
+{
+    insertOn(src, pos + 1);
 }
 
 void LinkedList::deleteFirst()
@@ -165,13 +172,13 @@ void LinkedList::deleteFirst()
         Node *temp{this->head->next};
         delete this->head;
         this->head = temp;
+        this->jumlahNode--;
     }
-    this->jumlahNode--;
 }
 
 void LinkedList::deleteOn(int pos)
 {
-    if (pos < 0 || pos > this->jumlahNode - 1)
+    if (pos < 0 || pos > (this->jumlahNode) - 1)
     {
         std::cout << "posisi invalid";
         return;
@@ -198,10 +205,15 @@ void LinkedList::deleteOn(int pos)
             if (after)
             {
                 delete after;
+                jumlahNode--;
             }
         }
     }
-    jumlahNode--;
+}
+
+void LinkedList::deleteAfter(int pos)
+{
+    deleteOn(pos + 1);
 }
 
 void LinkedList::deleteLast()
@@ -209,6 +221,12 @@ void LinkedList::deleteLast()
     if (!this->head)
     {
         return;
+    }
+    else if (this->head == this->tail)
+    {
+        delete this->head;
+        this->head = this->tail = nullptr;
+        this->jumlahNode = 0;
     }
     else
     {
@@ -218,10 +236,10 @@ void LinkedList::deleteLast()
             temp = temp->next;
         }
         delete this->tail;
+        this->jumlahNode--;
         this->tail = temp;
         this->tail->next = nullptr;
     }
-    this->jumlahNode--;
 }
 //!================================================================
 
@@ -236,17 +254,19 @@ int main()
         std::cout << "1. Insert First\n";
         std::cout << "2. Insert Last\n";
         std::cout << "3. Insert On\n";
-        std::cout << "4. Delete First\n";
-        std::cout << "5. Delete Last\n";
-        std::cout << "6. Delete On\n";
-        std::cout << "7. Clear Screen\n";
-        std::cout << "0. Exit\n====================\n";
+        std::cout << "4. Insert After\n";
+        std::cout << "5. Delete First\n";
+        std::cout << "6. Delete Last\n";
+        std::cout << "7. Delete On\n";
+        std::cout << "8. Delete After\n";
+        std::cout << "9. Clear Screen\n";
+        std::cout << "0. Exit\n=====================\n";
         std::cout << myList << "\n";
         std::cout << "Masukan Perintah : ";
         std::cin >> opt;
 
         double placeHolder{0};
-        double pos{0};
+        int pos{0};
 
         switch (opt)
         {
@@ -287,20 +307,30 @@ int main()
             std::this_thread::sleep_for(std::chrono::milliseconds(600));
             break;
         case 4:
+            std::cout << "Nilai : ";
+            std::cin >> placeHolder;
+            std::cout << "Target : ";
+            std::cin >> pos;
+            myList.insertAfter(placeHolder, pos);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            std::cout << "\nOperasi selesai\n\n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(600));
+            break;
+        case 5:
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             myList.deleteFirst();
             std::cout << "\nOperasi selesai\n\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(600));
 
             break;
-        case 5:
+        case 6:
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             myList.deleteLast();
             std::cout << "\nOperasi selesai\n\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(600));
 
             break;
-        case 6:
+        case 7:
             std::cout << "Posisi : ";
             std::cin >> pos;
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -308,7 +338,15 @@ int main()
             std::cout << "\nOperasi selesai\n\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(600));
             break;
-        case 7:
+        case 8:
+            std::cout << "Target : ";
+            std::cin >> pos;
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            myList.deleteAfter(pos);
+            std::cout << "\nOperasi selesai\n\n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(600));
+            break;
+        case 9:
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
             system("CLS");
             break;
