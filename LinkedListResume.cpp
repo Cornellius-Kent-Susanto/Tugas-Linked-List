@@ -7,17 +7,17 @@ struct LinkedList;
 
 typedef struct Node
 {
-    // agar fungsi operator<< dan class linkedlist dapat akses private member
+    // agar fungsi operator<< dan class LinkedList dapat akses private member
     friend std::ostream &operator<<(std::ostream &os, const LinkedList &rhs);
     friend struct LinkedList;
 
     //! Jelasin Spesifikasi Node
 private:
-    double val;
+    std::string val;
     Node *next;
 
 public:
-    Node(const double &src)
+    Node(const std::string &src)
         : val{src}, next{nullptr}
     {
     }
@@ -32,7 +32,7 @@ typedef struct LinkedList
 private:
     Node *head;
     Node *tail;
-    int jumlahNode{}; // simpan jumlah node
+    int jumlahNode{}; // simpan jumlah Node
 
 public:
     LinkedList()
@@ -41,10 +41,10 @@ public:
     }
 
     // jelasin spesifikasi class
-    void insertFirst(const double &src);
-    void insertLast(const double &src);
-    void insertOn(const double &src, int pos);
-    void insertAfter(const double &src, int pos);
+    void insertFirst(const std::string &src);
+    void insertLast(const std::string &src);
+    void insertOn(const std::string &src, int pos);
+    void insertAfter(const std::string &src, int pos);
 
     void deleteFirst();
     void deleteLast();
@@ -72,20 +72,21 @@ std::ostream &operator<<(std::ostream &os, const LinkedList &rhs)
     os << "LinkedList : [";
     while (traverse)
     {
-        os << traverse->val << (traverse->next == nullptr ? "" : ", ");
+        os << "(" << traverse->val << ", " << traverse->next << ")" << (traverse->next == nullptr ? "" : ", ");
         traverse = traverse->next;
     }
     os << "]\n"
        << "Jumlah Node : " << rhs.jumlahNode;
+    os << std::endl;
 
     return os;
 }
 //=================================================================
 
 //!================ implementasi member function ==================
-void LinkedList::insertFirst(const double &src)
+void LinkedList::insertFirst(const std::string &src)
 {
-    // jika linkedlist kosong
+    // jika LinkedList kosong
     if (head == nullptr)
     {
         this->head = this->tail = new Node{src};
@@ -102,9 +103,9 @@ void LinkedList::insertFirst(const double &src)
     jumlahNode++;
 }
 
-void LinkedList::insertLast(const double &src)
+void LinkedList::insertLast(const std::string &src)
 {
-    // jika linkedlist kosong
+    // jika LinkedList kosong
     if (!this->head)
     {
         insertFirst(src);
@@ -120,7 +121,7 @@ void LinkedList::insertLast(const double &src)
     }
 }
 
-void LinkedList::insertOn(const double &src, int pos)
+void LinkedList::insertOn(const std::string &src, int pos)
 {
     // jika posisi tidak valid
     if (pos > (this->jumlahNode) || pos < 0)
@@ -142,20 +143,20 @@ void LinkedList::insertOn(const double &src, int pos)
         }
         else
         {
-            Node *nodeBaru{new Node{src}};
+            Node *NodeBaru{new Node{src}};
             Node *temp{this->head};
             for (int i{0}; i < pos - 1; i++)
             {
                 temp = temp->next;
             }
-            nodeBaru->next = temp->next;
-            temp->next = nodeBaru;
+            NodeBaru->next = temp->next;
+            temp->next = NodeBaru;
             jumlahNode++;
         }
     }
 }
 
-void LinkedList::insertAfter(const double &src, int pos)
+void LinkedList::insertAfter(const std::string &src, int pos)
 {
     insertOn(src, pos + 1);
 }
@@ -265,7 +266,7 @@ int main()
         std::cout << "Masukan Perintah : ";
         std::cin >> opt;
 
-        double placeHolder{0};
+        std::string placeHolder{0};
         int pos{0};
 
         switch (opt)
